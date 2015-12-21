@@ -35,12 +35,12 @@ void ctrlc_handler(int signal) {
 class SufficientStats {
 public:
   cnn::real loss;
-  unsigned word_count;
-  unsigned sentence_count;
+  cnn::real word_count;
+  cnn::real sentence_count;
 
   SufficientStats() : loss(), word_count(), sentence_count() {}
 
-  SufficientStats(cnn::real loss, unsigned word_count, unsigned sentence_count) : loss(loss), word_count(word_count), sentence_count(sentence_count) {}
+  SufficientStats(cnn::real loss, cnn::real word_count, cnn::real sentence_count) : loss(loss), word_count(word_count), sentence_count(sentence_count) {}
 
   SufficientStats& operator+=(const SufficientStats& rhs) {
     loss += rhs.loss;
@@ -86,7 +86,7 @@ public:
     vector<WordId> target = get<1>(datum);
     float weight = get<2>(datum);
     Expression loss_expr = generator.BuildGraph(source, target, cg) * weight;
-    SufficientStats loss(as_scalar(cg.forward()), target.size() - 1, 1);
+    SufficientStats loss(as_scalar(cg.forward()), (target.size() - 1) * weight, 1);
     if (learn) {
       cg.backward();
     }
