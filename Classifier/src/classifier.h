@@ -21,7 +21,8 @@ struct MLP {
 class CompoundClassifier {
 public:
   CompoundClassifier();
-  CompoundClassifier(Model& model, unsigned vocab_size, unsigned num_pos_tags);
+  CompoundClassifier(unsigned max_length);
+  CompoundClassifier(Model& model, unsigned vocab_size, unsigned num_pos_tags, unsigned max_length);
   void InitializeParameters(Model& model, unsigned vocab_size, unsigned num_pos_tags);
 
   vector<tuple<Span, Expression, int>> BuildExpressions(const InputSentence& input_sentence, ComputationGraph& cg);
@@ -29,7 +30,7 @@ public:
   vector<tuple<Span, double, int>> Predict(const InputSentence& input_sentence, ComputationGraph& cg);
   MLP GetFinalMLP(ComputationGraph& cg);
 
-  unsigned down_sample_rate = 75;
+  unsigned down_sample_rate = 1;
 
 private:
   LSTMBuilder forward_builder;
@@ -47,12 +48,15 @@ private:
   unsigned pos_embedding_dim = 10;
   unsigned lstm_hidden_dim = 10;
   unsigned final_hidden_dim = 10;
+  unsigned max_length = 4;
 
   friend class boost::serialization::access;
   template<class Archive> void serialize(Archive& ar, const unsigned int) {
     ar & lstm_layer_count;
     ar & word_embedding_dim;
     ar & pos_embedding_dim;
+    ar & lstm_hidden_dim;
     ar & final_hidden_dim;
+    ar & max_length;
   }
 };

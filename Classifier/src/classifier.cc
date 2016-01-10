@@ -14,10 +14,10 @@ Expression MLP::Feed(vector<Expression> inputs) const {
   return output;
 }
 
-CompoundClassifier::CompoundClassifier() {
-}
+CompoundClassifier::CompoundClassifier() {}
+CompoundClassifier::CompoundClassifier(unsigned max_length) : max_length(max_length) {}
 
-CompoundClassifier::CompoundClassifier(Model& model, unsigned vocab_size, unsigned num_pos_tags) {
+CompoundClassifier::CompoundClassifier(Model& model, unsigned vocab_size, unsigned num_pos_tags, unsigned max_length) : max_length(max_length) {
   InitializeParameters(model, vocab_size, num_pos_tags);
 }
 
@@ -53,7 +53,7 @@ vector<tuple<Span, Expression, int>> CompoundClassifier::BuildExpressions(const 
   MLP final_mlp = GetFinalMLP(cg);
 
   vector<Expression> losses;
-  for (int length = 2; length <= 4; length++) {
+  for (int length = 2; length <= max_length; length++) {
     for (int start = 0; start <= (int)input_sentence.sentence.size() - length; ++start) {
       int end = start + length;
 

@@ -50,6 +50,7 @@ int main(int argc, char** argv) {
   ("batch_size,b", po::value<unsigned>()->default_value(1), "Size of minibatches")
   ("random_seed,r", po::value<unsigned>()->default_value(0), "Random seed. If this value is 0 a seed will be chosen randomly.")
   ("down_sample_rate,d", po::value<unsigned>()->default_value(1), "Take only every Nth negative training example")
+  ("max_length,n", po::value<unsigned>()->default_value(4), "Max length source span that can compound")
   // Optimizer configuration
   ("sgd", "Use SGD for optimization")
   ("momentum", po::value<double>(), "Use SGD with this momentum value")
@@ -96,10 +97,11 @@ int main(int argc, char** argv) {
   const unsigned num_iterations = vm["num_iterations"].as<unsigned>();
   const unsigned random_seed = vm["random_seed"].as<unsigned>();
   const unsigned minibatch_size = vm["batch_size"].as<unsigned>();
+  const unsigned max_length = vm["max_length"].as<unsigned>();
 
   cnn::Initialize(argc, argv, random_seed);
   std::mt19937 rndeng(42);
-  CompoundClassifier* classifier_model = new CompoundClassifier();
+  CompoundClassifier* classifier_model = new CompoundClassifier(max_length);
   classifier_model->down_sample_rate = vm["down_sample_rate"].as<unsigned>();
   Model* cnn_model = new Model();
   Dict vocab;
